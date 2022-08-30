@@ -7,16 +7,21 @@ namespace MoviePortal.API.Controllers
 	[Route("api/movies")]
 	public class MovieController : ApiController
 	{
+		private readonly IMessagePublisher _messagePublisher;
 		private readonly IMovieService _movieService;
 
-		public MovieController(IMovieService movieService)
+		public MovieController(IMessagePublisher messagePublisher, IMovieService movieService)
 		{
-			_movieService = movieService;
+			_messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
+			_movieService = movieService ?? throw new ArgumentNullException(nameof(movieService));
 		}
 
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[HttpGet]
-		public async Task<List<MovieDTO>> GetMovies() =>
-			await _movieService.GetAllAsync();
+		public async Task<List<MovieDTO>> GetMovies()
+		{
+			await _messagePublisher.Publish();
+			return await _movieService.GetAllAsync();
+		}
 	}
 }

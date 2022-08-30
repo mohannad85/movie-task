@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using MoviePortal.API.Extensions;
 using MoviePortal.ApplicationCore.Interfaces.Service;
 using MoviePortal.ApplicationCore.Model;
@@ -17,11 +18,17 @@ builder.Services.ConfigureIISIntegration();
 builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("MovieDatabase")));
 
 builder.Services.AddSingleton<IMovieService, MovieService>();
+builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
 
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAzureClients(builder =>
+{
+    var connectionString = "**";
+    builder.AddServiceBusClient(connectionString);
+});
 
 builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("MovieDatabase")));
 
