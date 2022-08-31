@@ -1,9 +1,9 @@
-﻿using MoviePortal.ApplicationCore.Model.DTO;
+﻿using MoviePortal.Common.Movie.DTO;
 
 namespace MoviePortal.ApplicationCore.Interfaces.Service
 {
 	public interface IMovieService
 	{
-		Task<List<MovieDTO>> GetAllAsync();
+		Task<List<MovieBasicInfoDTO>> GetAllAsync();
 	}
 }

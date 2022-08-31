@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MoviePortal.Infrastructure.Data;
-
-namespace MoviePortal.API.Extensions
+﻿namespace MoviePortal.API.Extensions
 {
 	public static class ServiceExtensions
     {
@@ -19,8 +16,5 @@ namespace MoviePortal.API.Extensions
             {
 
             });
-
-        public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration) =>
-            services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("sqlConnection")));
     }
 }

@@ -3,22 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using MoviePortal.API.Extensions;
 using MoviePortal.ApplicationCore.Interfaces.Service;
-using MoviePortal.ApplicationCore.Model;
 using MoviePortal.ApplicationCore.Service;
+using MoviePortal.Common.AzureStorageServices.Interfaces;
+using MoviePortal.Common.AzureStorageServices.Services;
 using MoviePortal.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 IWebHostEnvironment environment = builder.Environment;
-
-// Add services to the container.
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
-//builder.Services.ConfigureSqlContext(builder.Configuration);
-builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("MovieDatabase")));
+
+builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("MovieDatabaseConnectionString")));
 
 builder.Services.AddSingleton<IMovieService, MovieService>();
 builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
+builder.Services.AddSingleton<ITableStorageService, TableStorageService>();
 
 builder.Services.AddControllers();
 
@@ -26,11 +26,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAzureClients(builder =>
 {
-    var connectionString = "**";
-    builder.AddServiceBusClient(connectionString);
+    builder.AddServiceBusClient(configuration.GetSection("ServiceBusOptions:ServiceBusConnectionString"));
 });
-
-builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("MovieDatabase")));
 
 builder.Services.AddAuthentication()
     .AddGoogle("google", opt =>
@@ -48,6 +45,11 @@ if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
 	app.UseSwaggerUI();
+    using (var scope = app.Services.CreateScope())
+    {
+        var dataContext = scope.ServiceProvider.GetRequiredService<MovieDbContext>();
+        dataContext.Database.Migrate();
+    }
 }
 
 app.UseHttpsRedirection();

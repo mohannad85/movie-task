@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MoviePortal.ApplicationCore.Interfaces.Service;
-using MoviePortal.ApplicationCore.Model.DTO;
+using MoviePortal.Common.Movie.DTO;
 
 namespace MoviePortal.API.Controllers
 {
@@ -18,7 +18,7 @@ namespace MoviePortal.API.Controllers
 
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[HttpGet]
-		public async Task<List<MovieDTO>> GetMovies()
+		public async Task<List<MovieBasicInfoDTO>> GetMovies()
 		{
 			await _messagePublisher.Publish();
 			return await _movieService.GetAllAsync();
