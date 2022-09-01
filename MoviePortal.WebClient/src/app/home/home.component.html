@@ -1,1 +1,55 @@
-<p class="homeText">{{homeText}}</p> 
+<div class="container">
+	<div class="columns is-multiline p-0 pt-6 last">
+		<div class="column is-full">
+			<p class="has-text-white">Action Movies Collection</p>
+		</div>
+    <ng-container *ngFor="let movie of movies">
+		<div class="column is-one-quarter">
+			<img src="{{movie.image}}">
+      <br>
+      <h1 class="title">{{movie.titleOriginal}}</h1>
+      <h2 class="title is-6">{{movie.rating}}</h2>
+            <div class="columns">
+                <div class="column">
+                    <button class="button is-responsive is-small" (click)="reminder()">Reminder</button>
+                </div>
+                <div class="column">
+                    <button class="button is-responsive is-small" (click)="watched()">Watched</button>
+                </div>
+            </div>
+
+            <div class="modal" [ngClass]="{'is-active': isReminderActive}"> 
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                      <p class="modal-card-title">Modal title</p>
+                    </header>
+                    <section class="modal-card-body">
+                      <!-- Content ... -->
+                    </section>
+                    <footer class="modal-card-foot">
+                      <button class="button is-success">Save changes</button>
+                      <button (click)="reminder()" class="button">Cancel</button>
+                    </footer>
+                  </div>
+            </div>
+
+            <div class="modal" [ngClass]="{'is-active': isWatchedActive}">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                      <p class="modal-card-title">Modal title</p>
+                    </header>
+                    <section class="modal-card-body">
+                      <!-- Content ... -->
+                    </section>
+                    <footer class="modal-card-foot">
+                      <button class="button is-success">Save changes</button>
+                      <button (click)="watched()" class="button">Cancel</button>
+                    </footer>
+                  </div>
+            </div>
+		</div>
+  </ng-container>
+	</div>
+</div>

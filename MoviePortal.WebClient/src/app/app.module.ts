@@ -51,21 +51,6 @@ export function tokenGetter() {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorHandlerService,
       multi: true
-    },
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider('')
-          },
-        ],
-        onError: (err) => {
-          console.error(err);
-        }
-      } as SocialAuthServiceConfig
     }
   ],
   bootstrap: [AppComponent]

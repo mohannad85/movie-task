@@ -1,11 +1,9 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { AuthResponseDto } from './../../_interfaces/response/authResponseDto.model';
-import { UserForAuthenticationDto } from './../../_interfaces/user/userForAuthenticationDto.model';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from './../../shared/services/authentication.service';
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ExternalAuthDto } from 'src/app/_interfaces/externalAuth/externalAuthDto.model';
+import { Component, OnInit, NgZone } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
+import { environment } from 'src/environments/environment';
+import { AuthenticationService } from '../../shared/services/authentication.service';
 
 @Component({
   selector: 'app-login',
@@ -13,30 +11,46 @@ import { ExternalAuthDto } from 'src/app/_interfaces/externalAuth/externalAuthDt
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  private returnUrl!: string;
-  loginForm!: FormGroup;
-  errorMessage: string = '';
-  showError!: boolean;
 
-  constructor(private authService: AuthenticationService, private router: Router, private route: ActivatedRoute) { }
+  private clientId = environment.clientId
 
-  ngOnInit(): void {
-    console.log("ff");
-  }
+  constructor(
+    private router: Router,
+    private service: AuthenticationService,
+    private _ngZone: NgZone) { }
 
-  private validateExternalAuth(externalAuth: ExternalAuthDto) {
-    this.authService.externalLogin('api/accounts/externallogin', externalAuth)
-      .subscribe({
-        next: (res) => {
-            localStorage.setItem("token", res.token);
-            this.authService.sendAuthStateChangeNotification(res.isAuthSuccessful);
-            this.router.navigate([this.returnUrl]);
-      },
-        error: (err: HttpErrorResponse) => {
-          this.errorMessage = err.message;
-          this.showError = true;
-          this.authService.signOutExternal();
-        }
-      });
+    ngOnInit(): void {
+      // @ts-ignore
+      window.onGoogleLibraryLoad = () => {
+        // @ts-ignore
+        google.accounts.id.initialize({
+          client_id: this.clientId,
+          callback: this.handleCredentialResponse.bind(this),
+          auto_select: false,
+          cancel_on_tap_outside: true
+        });
+        // @ts-ignore
+        google.accounts.id.renderButton(
+        // @ts-ignore
+        document.getElementById("buttonDiv"),
+          { theme: "outline", size: "large", width: "100%" } 
+        );
+        // @ts-ignore
+        google.accounts.id.prompt((notification: PromptMomentNotification) => {});
+      };
+    }
+
+    async handleCredentialResponse(response: CredentialResponse) {
+      await this.service.LoginWithGoogle(response.credential).subscribe(
+        (x:any) => {
+          debugger;
+          localStorage.setItem("token", x.token);
+          this._ngZone.run(() => {
+            this.router.navigate(['/logout']);
+          })},
+        (error:any) => {
+            console.log(error);
+          }
+        );  
   }
 }

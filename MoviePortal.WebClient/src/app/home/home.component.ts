@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Movie } from '../shared/models/movie';
+import { MovieService } from '../shared/services/movies.service';
 
 @Component({
   selector: 'app-home',
@@ -6,12 +8,28 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  public homeText!: string;
+  movies!: Movie[];
 
-  constructor() { }
+  public homeText!: string;
+  isWatchedActive!: boolean;
+  isReminderActive!: boolean;
+
+  constructor(private movieService: MovieService) { }
 
   ngOnInit(): void {
-    this.homeText = "WELCOME TO COMPANY-EMPLOYEES CLIENT APP"
+    this.movieService.getMovies()
+      .subscribe(data => {
+        this.movies = data;
+        console.log(data);
+      });
+  }
+
+  reminder() {
+    this.isReminderActive = !this.isReminderActive;
+  }
+
+  watched() {
+    this.isWatchedActive= !this.isWatchedActive;
   }
 
 }
