@@ -2,9 +2,9 @@
 {
 	public interface IChangeTracker
 	{
-        DateTime CreatedDate { get; set; }
-        DateTime UpdatedDate { get; set; }
-        int CreatedById { get; set; }
-        int UpdatedById { get; set; }
+        DateTime? CreatedDate { get; set; }
+        DateTime? UpdatedDate { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
     }
 }

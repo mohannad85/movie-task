@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using MoviePortal.ApplicationCore.Interfaces.Infrastructure;
 using MoviePortal.ApplicationCore.Model;
 
 namespace MoviePortal.Infrastructure.Data
 {
-	public class MovieDbContext : IdentityDbContext<User>
+	public class MovieDbContext : DbContext, IMovieDbContext
 	{
-		public MovieDbContext(DbContextOptions<MovieDbContext> options) : base(options)
+		public MovieDbContext(DbContextOptions<MovieDbContext> options, IConfiguration configuration) : base(options)
 		{
 		}
 

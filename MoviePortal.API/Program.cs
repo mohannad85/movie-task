@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using MoviePortal.API.Extensions;
+using MoviePortal.ApplicationCore.Interfaces.Infrastructure;
 using MoviePortal.ApplicationCore.Interfaces.Service;
+using MoviePortal.ApplicationCore.Model;
 using MoviePortal.ApplicationCore.Service;
 using MoviePortal.Common.AzureStorageServices.Interfaces;
 using MoviePortal.Common.AzureStorageServices.Services;
@@ -11,14 +13,14 @@ using MoviePortal.Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 IWebHostEnvironment environment = builder.Environment;
-builder.Services.ConfigureCors();
-builder.Services.ConfigureIISIntegration();
 
 builder.Services.AddDbContext<MovieDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("MovieDatabaseConnectionString")));
-
+builder.Services.ConfigureCors();
 builder.Services.AddSingleton<IMovieService, MovieService>();
 builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
 builder.Services.AddSingleton<ITableStorageService, TableStorageService>();
+builder.Services.AddSingleton<IAccountService, AccountService>();
+builder.Services.AddSingleton<IWatchedMovieService, WatchedMovieService>();
 
 builder.Services.AddControllers();
 
@@ -52,12 +54,16 @@ if (app.Environment.IsDevelopment())
     }
 }
 
+app.UseCors(options => options
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
 app.UseHttpsRedirection();
 
-app.UseCors("CorsPolicy");
-
+app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors("CorsPolicy");
 app.MapControllers();
 
 app.Run();

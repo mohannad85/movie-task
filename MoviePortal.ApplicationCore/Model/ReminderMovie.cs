@@ -13,9 +13,9 @@ namespace MoviePortal.ApplicationCore.Model
 		public int MovieId { get; set; }
 		public DateTime ReminderDate { get; set; }
 
-		public DateTime CreatedDate { get; set; }
-		public DateTime UpdatedDate { get; set; }
-		public int CreatedById { get; set; }
-		public int UpdatedById { get; set; }
+		public DateTime? CreatedDate { get; set; }
+		public DateTime? UpdatedDate { get; set; }
+		public string? CreatedBy { get; set; }
+		public string? UpdatedBy { get; set; }
 	}
 }
